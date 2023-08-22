@@ -9,8 +9,8 @@ import Bottleneck from "bottleneck"
 import path from "node:path"
 import { expressjwt, Request } from "express-jwt"
 import * as dotenv from "dotenv"
-import jwksRsa, { GetVerificationKey } from "jwks-rsa"
-import rateLimit from "express-rate-limit"
+// import jwksRsa, { GetVerificationKey } from "jwks-rsa"
+// import rateLimit from "express-rate-limit"
 dotenv.config()
 
 const debugOptions: DebugOptions = {
@@ -44,17 +44,17 @@ app.get("/", (req, res) => {
 })
 
 // Authorize users via a JWT signed by Google
-app.use(expressjwt({
-  secret: jwksRsa.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri: "https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com"
-  }) as GetVerificationKey,
-  algorithms: ["RS256"],
-  audience: SERVER_CONFIG.googleProjectId,
-  issuer: `https://securetoken.google.com/${SERVER_CONFIG.googleProjectId}`
-}))
+// app.use(expressjwt({
+//   secret: jwksRsa.expressJwtSecret({
+//     cache: true,
+//     rateLimit: true,
+//     jwksRequestsPerMinute: 5,
+//     jwksUri: "https://www.googleapis.com/robot/v1/metadata/jwk/securetoken@system.gserviceaccount.com"
+//   }) as GetVerificationKey,
+//   algorithms: ["RS256"],
+//   audience: SERVER_CONFIG.googleProjectId,
+//   issuer: `https://securetoken.google.com/${SERVER_CONFIG.googleProjectId}`
+// }))
 
 // Alternatively, authorize service workers via secret-based HS256 jwt
 // ex. { "sub": "marked-fares-worker", "email": "sw@awardwiz.com", "no-rl": true, "iat": 1516239022 }
@@ -78,31 +78,32 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     next(err)
   }
 })
-app.use((req: Request, res: Response, next: NextFunction) => {
-  logGlobal("Received request:", c.magenta(req.url), "by", c.greenBright(`${req.auth!.sub!} (${req.auth!["email"] as string})`))
-  next()
-})
+// app.use((req: Request, res: Response, next: NextFunction) => {
+//   logGlobal("Received request:", c.magenta(req.url), "by", c.greenBright(`${req.auth!.sub!} (${req.auth!["email"] as string})`))
+//   next()
+// })
 
 // Enforce rate limiting per user id (unless the no-rl flag is set on the jwt)
-app.use(rateLimit({
-  windowMs: SERVER_CONFIG.rateLimitWindowMs,
-  max: SERVER_CONFIG.rateLimitMax,
-  standardHeaders: true,
-  legacyHeaders: false,
-  skip: (req: Request) => req.auth!["no-rl"] === true,
-  keyGenerator: (req: Request) => req.auth!.sub!,
-  handler: (req: Request, res: Response) => {
-    logGlobal(c.red("Request rate limit exceeded:"), c.magenta(req.url), "by", c.greenBright(`${req.auth!.sub!} (${req.auth!["email"] as string})`))
-    res.status(429).send({ error: "Too many requests" })
-  }
-}))
+// app.use(rateLimit({
+//   windowMs: SERVER_CONFIG.rateLimitWindowMs,
+//   max: SERVER_CONFIG.rateLimitMax,
+//   standardHeaders: true,
+//   legacyHeaders: false,
+//   skip: (req: Request) => req.auth!["no-rl"] === true,
+//   keyGenerator: (req: Request) => req.auth!.sub!,
+//   handler: (req: Request, res: Response) => {
+//     logGlobal(c.red("Request rate limit exceeded:"), c.magenta(req.url), "by", c.greenBright(`${req.auth!.sub!} (${req.auth!["email"] as string})`))
+//     res.status(429).send({ error: "Too many requests" })
+//   }
+// }))
 
 const limiter = new Bottleneck({ maxConcurrent: SERVER_CONFIG.concurrentRequests, minTime: 200 })
 app.get("/run/:scraperName(\\w+)-:origin([A-Z]{3})-:destination([A-Z]{3})-:departureDate(\\d{4}-\\d{2}-\\d{2})", async (req: Request, res: Response) => {
   // Limit concurrency
   await limiter.schedule(async () => {
-    const reqExtra = req as Request & { rateLimit?: { current: number, limit: number } }
-    logGlobal("Processing request:", c.magenta(req.url), "by", c.greenBright(`${req.auth!.sub!} (${req.auth!["email"] as string})`), reqExtra.rateLimit ? c.whiteBright(`(${reqExtra.rateLimit.current}/${reqExtra.rateLimit.limit})`) : "")
+    // const reqExtra = req as Request & { rateLimit?: { current: number, limit: number } }
+    // logGlobal("Processing request:", c.magenta(req.url), "by", c.greenBright(`${req.auth!.sub!} (${req.auth!["email"] as string})`), reqExtra.rateLimit ? c.whiteBright(`(${reqExtra.rateLimit.current}/${reqExtra.rateLimit.limit})`) : "")
+    logGlobal("Processing request:", c.magenta(req.url))
     const { scraperName, origin, destination, departureDate } = req.params
 
     const scraper = await import(`./scrapers/${scraperName!}.js`) as AwardWizScraperModule

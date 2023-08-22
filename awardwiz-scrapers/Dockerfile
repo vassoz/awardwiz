@@ -9,7 +9,7 @@ ARG DEBUG=0
 # tools to debug via vnc (connect to this instance on port 8282)
 ENV DISPLAY=:0.0
 RUN apt-get update && DEBIAN_FRONTEND="noninteractive" TZ="America/Los_Angeles" apt-get install --no-install-recommends -y \
-  xvfb=2:1.20.* \
+  xvfb=2:1.20.* x11-utils=7.7* \
   && if [ $DEBUG = 1 ]; then apt-get install --no-install-recommends -y x11vnc=0.9.* novnc=1:1.0.* fluxbox=1.3.* ; fi \
   ; apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -27,3 +27,4 @@ COPY dist/ dist/
 COPY awardwiz-scrapers/entrypoint.sh ./
 
 ENTRYPOINT ["./entrypoint.sh"]
+CMD ["node", "--enable-source-maps", "dist/awardwiz-scrapers/main-server.js"]

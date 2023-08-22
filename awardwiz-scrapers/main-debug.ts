@@ -37,5 +37,6 @@ else
   logGlobal(Array.isArray(result.result)
     ? `Results: ${c.greenBright(result.result.length.toLocaleString())} item(s)`
     : `Results: ${c.greenBright(JSON.stringify(result.result).length.toLocaleString())} bytes`)
+logGlobal(result.result);
 
 logger.close()
