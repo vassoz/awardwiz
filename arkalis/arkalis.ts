@@ -98,7 +98,7 @@ export type DebugOptions = {
   defaultResultCacheTtl?: number
 }
 export const defaultDebugOptions: Required<DebugOptions> = {
-  maxAttempts: 3, pauseAfterError: false, pauseAfterRun: false, useProxy: true, browserDebug: false, winston: null,
+  maxAttempts: 1, pauseAfterError: false, pauseAfterRun: false, useProxy: true, browserDebug: false, winston: null,
   globalBrowserCacheDir: "./tmp/browser-cache", globalCachePath: null, drawMousePath: false,
   timezone: null, showRequests: true, useResultCache: false, defaultResultCacheTtl: 0,
   liveLog: (prettyLine: string) => { /* eslint-disable no-console */ console.log(prettyLine) /* eslint-enable no-console */}

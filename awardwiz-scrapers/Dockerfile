@@ -14,6 +14,7 @@ RUN apt-get update && DEBIAN_FRONTEND="noninteractive" TZ="America/Los_Angeles" 
   ; apt-get clean && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 8282
+EXPOSE 2222
 
 WORKDIR /usr/src/awardwiz
 COPY package.json package-lock.json ./

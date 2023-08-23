@@ -81,7 +81,7 @@ run-live-botting-tests: build
 ##############################
 
 [private]
-build-docker debug="0" tag="vassoz/awardwiz-scrapers-local" platform=dockerarch: build
+build-docker debug="1" tag="vassoz/awardwiz-scrapers-local" platform=dockerarch: build
   docker buildx build --file ./awardwiz-scrapers/Dockerfile -t {{tag}} --platform "linux/{{platform}}" --build-arg DEBUG={{debug}} ./
 
 [private]
@@ -100,9 +100,9 @@ publish tag="vassoz/awardwiz-scrapers-local": build-docker
 #   docker run -it --rm -p 8282:8282 -p 9229:9229 --volume $(pwd)/.env:/usr/src/awardwiz/.env:ro --volume $(pwd)/tmp:/usr/src/awardwiz/tmp {{extra}}
 
 # build arkalis docker image
-[private]
-build-arkalis-docker:
-  docker buildx build --platform=linux/amd64 --file ./arkalis/Dockerfile -t "arkalis" ./
+# [private]
+# build-arkalis-docker:
+#   docker buildx build --platform=linux/amd64 --file ./arkalis/Dockerfile -t "arkalis" ./
 
 # # build, deploy and run in prod
 # [private]

@@ -29,7 +29,7 @@ const SERVER_CONFIG = {
   googleProjectId: process.env["GOOGLE_PROJECT_ID"] ?? "awardwiz",
   rateLimitMax: 100,
   rateLimitWindowMs: 60 * 60 * 1000,
-  concurrentRequests: parseInt(process.env["CONCURRENT_REQUESTS"] ?? "5"),
+  concurrentRequests: parseInt(process.env["SERVER_CONFIG.concurrentRequests"] ?? "1"),
   serviceWorkerJwtSecret: process.env["SERVICE_WORKER_JWT_SECRET"]
 }
 
@@ -97,7 +97,7 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
 //   }
 // }))
 
-const limiter = new Bottleneck({ maxConcurrent: SERVER_CONFIG.concurrentRequests, minTime: 200 })
+const limiter = new Bottleneck({ maxConcurrent: SERVER_CONFIG.concurrentRequests, minTime: 120000 })
 app.get("/run/:scraperName(\\w+)-:origin([A-Z]{3})-:destination([A-Z]{3})-:departureDate(\\d{4}-\\d{2}-\\d{2})", async (req: Request, res: Response) => {
   // Limit concurrency
   await limiter.schedule(async () => {
