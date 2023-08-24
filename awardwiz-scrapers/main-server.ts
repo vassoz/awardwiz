@@ -125,7 +125,7 @@ app.get("/run/:scraperName(\\w+)-:origin([A-Z]{3})-:destination([A-Z]{3})-:depar
     } catch (error) {
       res.contentType("application/json")
       res.status(500)
-      res.end(JSON.stringify("Timeout"))
+      res.end(JSON.stringify(error))
     }
   })
 })
