@@ -112,17 +112,21 @@ app.get("/run/:scraperName(\\w+)-:origin([A-Z]{3})-:destination([A-Z]{3})-:depar
     const cacheKey = scraperName === "fr24"
       ? `${scraper.meta.name}-${query.origin}${query.destination}`
       : `${scraper.meta.name}-${query.origin}${query.destination}-${query.departureDate.substring(5, 7)}${query.departureDate.substring(8, 10)}`
-
-    const results = await runArkalis(async (arkalis) => {
-      arkalis.log("Running scraper for", query)
-      const scraperResults = await scraper.runScraper(arkalis, query)
-      arkalis.log(c.green(`Completed with ${scraperResults.length} results`))
-      return scraperResults
-    }, debugOptions, scraper.meta, cacheKey)    // [2013-01-01 05:32:00.123 united-SFOLAX-0220-U7fw]
-
-    res.contentType("application/json")
-    res.status(results.result === undefined ? 500 : 200)
-    res.end(JSON.stringify(results))
+    try {
+      const results = await runArkalis(async (arkalis) => {
+        arkalis.log("Running scraper for", query)
+        const scraperResults = await scraper.runScraper(arkalis, query)
+        arkalis.log(c.green(`Completed with ${scraperResults.length} results`))
+        return scraperResults
+      }, debugOptions, scraper.meta, cacheKey)    // [2013-01-01 05:32:00.123 united-SFOLAX-0220-U7fw]
+      res.contentType("application/json")
+      res.status(results.result === undefined ? 500 : 200)
+      res.end(JSON.stringify(results))
+    } catch (error) {
+      res.contentType("application/json")
+      res.status(500)
+      res.end(JSON.stringify("Timeout"))
+    }
   })
 })
 
